@@ -1,0 +1,1 @@
+{"alice mononobe": 2, "elu": 2, "honma himawari": 2, "kaede higuchi": 2, "mikoto rindou": 2, "mito tsukino": 2, "mugi ienaga": 2, "rin shizuka": 2, "sister claire": 2, "touya kenmochi": 2, "yashiro kizuku": 2, "youko akabane": 2}

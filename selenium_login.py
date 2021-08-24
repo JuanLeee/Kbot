@@ -1,0 +1,774 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from time import sleep
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC, wait
+from selenium.webdriver.common.action_chains import ActionChains
+from tesseract_ocr import *
+from card_image import url_to_image
+import tesseract_ocr
+import sys
+import random
+import logging
+import json
+from discord_webhook import DiscordWebhook
+from good_stuffs import dict_good_stuff_static
+from good_stuffs import dict_good_stuff_addition
+from good_stuffs import char_numbers
+import time
+import math
+
+
+import time
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+class Discord_Scraper:
+    def __init__(self, driver, action, user_name, password, server_name, channel_name, server_name_list, flag_server, id_name, timer):
+        self.driver = driver
+        self.action = action
+        self.user_name = user_name
+        self.password = password
+        self.server_name = server_name
+        self.server_name_list = server_name_list
+        self.channel_name = channel_name
+        global flag_cd_grab
+        global flag_cd_grab_long
+        global flag_global_clicked
+        global flag_refresh
+        global flag_stop
+        flag_refresh = False
+        flag_global_clicked = False
+        self.clicked_card = ''
+        self.flag_clicked = False
+        self.count_reset = 10
+        self.count_clicked = self.count_reset
+        self.flag_server = flag_server
+        self.id_name = id_name
+        self.curr_id = ''
+        if timer:
+            self.sleep_timer_grab = 300
+            self.sleep_timer_drop = 900
+        else:
+            self.sleep_timer_grab = 600
+            self.sleep_timer_drop = 1800
+        flag_stop = False
+        self.ocr = OCR_PyTes()
+        # path = self.ocr.resource_path('./good_stuff.json')
+        # with open(path) as f:
+        #     self.dict_good_stuff = json.load(f)
+        #     for key in self.dict_good_stuff.keys():
+        #         temp_value = self.dict_good_stuff[key].split(' ', 1)[0]
+        #         self.dict_good_stuff[key] = temp_value
+        #     print(self.dict_good_stuff)
+        self.dict_good_stuff = dict_good_stuff_static
+        self.dict_good_stuff_addition = dict_good_stuff_addition
+
+        for key in self.dict_good_stuff.keys():
+            temp_value = self.dict_good_stuff[key].split(' ', 1)[0]
+            self.dict_good_stuff[key] = temp_value
+
+        for key in self.dict_good_stuff_addition.keys():
+            temp_value = self.dict_good_stuff_addition[key].split(' ', 1)[0]
+            self.dict_good_stuff_addition[key] = temp_value
+        # print(self.dict_good_stuff)
+        self.time = time.time()
+        self.counter = 50
+
+        self.disc_webhook = 'https://discord.com/api/webhooks/860683085464338442/o6zcHnSaFcJ-XR2ojwz2KM5boFIENoIe5ZoTnvuWajz6XecyqSn8nQEwS6ZWVkwFd7Om'\
+
+
+    def login_sign(self):
+        error_count = 0
+        while error_count < 2:
+            try:
+                self.driver.get("https://discord.com/login")
+
+                print('Login')
+                username_input = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.NAME, 'email')))
+                username_input.send_keys(self.user_name)
+
+                password_input = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.NAME, 'password')))
+                password_input.send_keys(self.password)
+
+                print('Submit button')
+                login_button = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.XPATH, "//button[@type='submit']")))
+                self.driver.execute_script(
+                    "arguments[0].click();", login_button)
+
+                server_name = "//*[@data-list-item-id=\"" + \
+                    self.server_name + "\"]"
+
+                print("Trying if School Pop up")
+                try:
+                    hcaptcha = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'colorHeaderSecondary-3Sp3Ft')))
+                    print("HCaptcha")
+                    pop_up = WebDriverWait(self.driver, 120).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                    pop_up_button = WebDriverWait(pop_up, 20).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                    self.driver.execute_script(
+                        "arguments[0].click();", pop_up_button)
+                    print("School Pop up")
+                except:
+                    print("No HCaptcha")
+                    # logging.error("Exception occurred", exc_info=True)
+                    try:
+                        pop_up = WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                        pop_up_button = WebDriverWait(pop_up, 5).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                        self.driver.execute_script(
+                            "arguments[0].click();", pop_up_button)
+                        print("School Pop up")
+                    except:
+                        print("School No Pop up")
+                        # logging.error("Exception occurred", exc_info=True)
+
+                print('Server')
+                server_icon = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.XPATH, server_name)))
+                self.driver.execute_script(
+                    "arguments[0].click();", server_icon)
+
+                print("Trying to see if pop up")
+
+                try:
+                    pop_up = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'focusLock-Ns3yie')))
+                    self.driver.execute_script("arguments[0].click();", WebDriverWait(pop_up, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'button-38aScr'))))
+                    print("Pop up")
+                except:
+                    print("No Pop up")
+                    # logging.error("Exception occurred", exc_info=True)
+
+                print('Channel Scroll')
+                channel_list = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'scroller-RmtA4e')))
+                self.action.move_to_element(channel_list.find_elements(
+                    By.CLASS_NAME, 'containerDefault--pIXnN')[-1]).perform()
+                time.sleep(1)
+                self.action.move_to_element(channel_list.find_elements(
+                    By.CLASS_NAME, 'containerDefault--pIXnN')[-1]).perform()
+
+                channel_name = "//*[@data-list-item-id=\"" + \
+                    self.channel_name + "\"]"
+
+                print('Channel')
+                logging.info("Logged into " + self.server_name_list)
+                channel_icon = WebDriverWait(self.driver, 120).until(
+                    EC.presence_of_element_located((By.XPATH, channel_name)))
+
+                self.driver.execute_script(
+                    "arguments[0].click();", channel_icon)
+
+                webhook = DiscordWebhook(url=self.disc_webhook, rate_limit_retry=True,
+                                         content='Logged into ' + self.user_name + ' and into server ' + self.server_name_list)
+                response = webhook.execute()
+
+                break
+            except:
+                logging.warning("Starting up")
+                logging.error("Exception occurred", exc_info=True)
+                time.sleep(5)
+
+    def message_log(self, f_condition, f_action):
+        global flag_refresh
+        global flag_global_clicked
+        global flag_cd_grab
+        global flag_cd_grab_long
+        global flag_stop
+        flag_cd_grab_long = True
+        flag_cd_grab = True
+        refresh_counter = 0
+        # print("1")
+        logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+        # print('Messages')
+        i = len(logs)-1
+        while i <= 0:
+            # print("2")
+            logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+            i = len(logs)-1
+        interval = 0.33
+        # print("3")
+        # self.driver.execute_script("document.body.style.zoom='25%'")
+        print('Message Scroll')
+        # print(len(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))))
+        self.action.move_to_element(WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))[-2]).perform()
+        for n in range(1, 15):
+            WebDriverWait(self.driver, 120, poll_frequency=0.05).until(EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, 'message-2qnXI6')))[-1].send_keys(Keys.ARROW_DOWN)
+        logs_list = []
+
+        n = 5
+        count_clear = 0
+        while not flag_stop:
+            try:
+                logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                    EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                # logs = log.find_elements(By.CLASS_NAME,'message-2qnXI6')
+                temp_list = []
+                for j in range(1, n):
+
+                    z = -1 * j
+                    # print(z)
+                    try:
+                        data_list_str = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))[z].get_attribute('id')
+                        self.curr_id = str(data_list_str)
+                    except:
+                        logging.info("NO ATTRIBUTES START" +
+                                     " " + self.server_name_list)
+                        logging.info(str(z) + " FAILED " + self.curr_id)
+                        # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
+                        # logging.info(attrs)
+                        logging.warning(
+                            "NO ATTRIBUTES START END", exc_info=True)
+                        # time.sleep(4)
+                        break
+                    temp_list.append(data_list_str)
+                    # print(data_list_str)
+                    if data_list_str not in logs_list:
+                        temp_log = logs[z]
+                        # print(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))[z].text)
+                        # print(temp_log.get_attribute('data-list-item-id'))
+                        # print(curr_message)
+                        # logging.info(temp_log.text)
+                        if self.flag_clicked:
+                            self.count_clicked -= 1
+                            text = temp_log.text
+                            # logging.info(text)
+                            # logging.INFO(text)
+                            if self.id_name + ', your Evasion' in text:
+                                self.count_clicked = self.count_reset
+                                self.flag_clicked = False
+                                flag_cd_grab_long = True
+                                flag_cd_grab = True
+                                flag_global_clicked = False
+                                webhook = DiscordWebhook(url=self.disc_webhook, rate_limit_retry=True,
+                                                         content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
+                                logging.info("Evasion Proc")
+                                webhook.execute()
+                                logs_list = temp_list + logs_list
+                                break
+                            elif self.id_name + ' fought off' in text or self.id_name + ' took the' in text:
+                                self.count_clicked = self.count_reset
+                                self.flag_clicked = False
+                                flag_cd_grab_long = False
+                                logging.info("GOTTEM")
+                                print("Gottem")
+                                webhook = DiscordWebhook(url=self.disc_webhook, rate_limit_retry=True,
+                                                         content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
+                                response = webhook.execute()
+
+                                time.sleep(self.sleep_timer_grab)
+                                flag_cd_grab_long = True
+                                flag_cd_grab = True
+                                flag_global_clicked = False
+                                print("Exit: " + self.server_name_list)
+                                logs_list = temp_list + logs_list
+                                break
+                            elif self.count_clicked <= 0 or self.clicked_card in text.lower():
+                                print("Fled")
+                                self.count_clicked = self.count_reset
+                                self.flag_clicked = False
+                                flag_cd_grab = False
+                                time.sleep(60)
+                                flag_cd_grab = True
+                                flag_cd_grab_long = True
+                                flag_global_clicked = False
+                                print("Exit: " + self.server_name_list)
+                                logs_list = temp_list + logs_list
+                                break
+                        elif f_condition(temp_log):
+                            # print("Condition")
+                            f_action(temp_log, self.driver)
+                            # pos = get_position_hash(href_link,hash_table)
+                            # print(pos)
+                            # if pos > -1:
+                            #     reactions_container = WebDriverWait(temp_log,30).until(EC.presence_of_element_located((By.CLASS_NAME,'reactions-12N0jA')))
+                            #     reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
+                            #     while len(reactions) < pos:
+                            #         reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
+                            #     driver.execute_script("arguments[0].click();", reactions[pos-1].find_element(By.CLASS_NAME,'reactionInner-15NvIl'))
+                            # # find_element_by_class_name('reactions-12N0jA')
+                logs_list = temp_list
+                if not flag_cd_grab:
+                    print("Enter: " + self.server_name_list)
+                    self.count_clicked = self.count_reset
+                    self.flag_clicked = False
+                    sleep(60)
+                    # flag_cd_grab = True
+                    # flag_cd_grab_long = True
+                    # flag_global_clicked = False
+                    logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                        EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                    print("Exit: " + self.server_name_list)
+                elif not flag_cd_grab_long:
+                    print("Enter: " + self.server_name_list)
+                    self.count_clicked = self.count_reset
+                    self.flag_clicked = False
+                    sleep(self.sleep_timer_grab)
+                    # flag_cd_grab = True
+                    # flag_cd_grab_long = True
+                    # flag_global_clicked = False
+                    logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                        EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                    print("Exit: " + self.server_name_list)
+                sleep(interval)
+            except:
+                logging.warning("Error ml "+ self.server_name_list)
+                logging.error("Exception occurred", exc_info=True)
+            if flag_stop:
+                self.driver.quit()
+                print("Quit " + self.server_name_list)
+                break
+
+    def kd_every(self):
+        global flag_refresh
+        global flag_global_clicked
+        global flag_cd_grab
+        global flag_cd_grab_long
+        global flag_stop
+        flag_cd_grab_long = True
+        flag_cd_grab = True
+        flag_stop = False
+        sleep(90)
+        while not flag_stop:
+            if not flag_cd_grab or not flag_cd_grab_long or flag_global_clicked:
+                sleep(20)
+            else:
+                try:
+                    logging.warning('Drop')
+                    textbox = self.driver.find_element_by_class_name(
+                        'markup-2BOw-j.slateTextArea-1Mkdgw.fontSize16Padding-3Wk7zP')
+                    textbox.send_keys('kd')
+                    textbox.send_keys(Keys.ENTER)
+                    sleep(float(random.randrange(
+                        self.sleep_timer_drop, self.sleep_timer_drop+300)))
+                except:
+                    logging.error("Exception occurred", exc_info=True)
+        self.driver.quit()
+        print("Quit DROP " + self.server_name_list)
+
+    def condition_BOT_droppping(self, logs):
+        # print(logs.text)
+        try:
+            if "dropping 4 cards!" in logs.text or "dropping 3 cards!" in logs.text:
+                if WebDriverWait(logs, 30, poll_frequency=0.05).until(EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb'))):
+                    return True
+        except:
+            return False
+        return False
+
+    def condition_BOT_droppping_Server(self, logs):
+        # print(logs.text)
+        try:
+            if "cards since this server is currently active!" in logs.text:
+                if WebDriverWait(logs, 30, poll_frequency=0.05).until(EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb'))):
+                    return True
+        except:
+            return False
+        return False
+
+    def flag_stop_true(self):
+        global flag_stop
+        flag_stop = True
+        self.driver.quit()
+        print("Quit " + self.server_name_list)
+
+    def action_href_img(self, logs, driver):
+        global flag_global_clicked
+        global flag_cd_grab
+        # print(logs.text)
+        # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.XPATH,"//img[@style=\"width: 400px; height: 149px;\" or style=\"width: 400px; height: 148px;\"]")))
+        # print(logs.text)
+        error_count = 0
+        flag_finished = False
+        while(error_count < 3 and not flag_finished):
+            # logging.info(logs.text)
+            try:
+                img_container = WebDriverWait(logs, 30, poll_frequency=0.05).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb')))
+                href_link = img_container.get_attribute('href')
+                # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
+                # dimensions = img_container.get_attribute('src')
+                # Faster
+                error_count_image = 0
+                try:
+                    image = url_to_image(href_link)
+                    while image is None:
+                        error_count_image += 1
+                        if error_count_image > 10:
+                            break
+                        logging.info("Cant get image:" +
+                                     href_link + " " + str(error_count_image))
+                        image = url_to_image(href_link)
+                    h, w, c = image.shape
+                except:
+                    logging.warning("Cant get image:" + href_link)
+                    logging.warning("Unexpected error:", sys.exc_info()[0])
+                    error_count += 1
+                    continue
+                max = 4 if w > 900 else 3
+                pos = max-1
+                # card_name_list = ""
+                try:
+                    while pos >= 0 and not self.flag_clicked:
+                        print_num = self.ocr.get_print_num(image, pos)
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
+                            name_card = print_num
+                            read_series = print_num
+                            series = print_num
+                            try:
+                                self.click_reactions(logs, driver, pos)
+                                name_card = self.ocr.get_names_single(
+                                    image, w, pos)
+                                print(str(name_card) + str(series) +
+                                      self.server_name_list)
+                                logging.info("Got Name: " + str(name_card) + " Series: " + str(
+                                    read_series) + " Server: " + self.server_name_list + " URL: " + href_link)
+                                self.clicked_card = name_card.split(' ', 1)[0]
+                                self.flag_clicked = True
+                            except:
+                                error_count += 1
+                                logging.warning(
+                                    "Cant Click Edition" + self.server_name_list, exc_info=True)
+                        elif(not flag_global_clicked):
+                            name_card = self.ocr.get_names_single(
+                                image, w, pos)
+                            if (name_card in self.dict_good_stuff) and not flag_global_clicked:
+                                series = self.dict_good_stuff.get(
+                                    name_card, '-1')
+                                read_series = self.ocr.get_names_bottom(
+                                    image, w, pos).split(' ', 1)[0]
+                                if series == '123456' or read_series == series:
+                                    try:
+                                        self.click_reactions(logs, driver, pos)
+                                        print(name_card + " " + series +
+                                              " " + self.server_name_list)
+                                        logging.info("Got Name: " + name_card + " Series: " + read_series +
+                                                     " Server: " + self.server_name_list + " URL: " + href_link)
+                                        self.clicked_card = name_card.split(' ', 1)[
+                                            0]
+                                        self.flag_clicked = True
+                                    except:
+                                        error_count += 1
+                                        logging.warning(
+                                            "Cant Click Edition " + self.server_name_list, exc_info=True)
+                            # card_name_list += " " + name_card
+                            elif name_card in self.dict_good_stuff_addition and not flag_global_clicked:
+                                series = self.dict_good_stuff_addition.get(
+                                    name_card, '-1')
+                                read_series = self.ocr.get_names_bottom(
+                                    image, w, pos).split(' ', 1)[0]
+                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
+                                if series == '123456' or read_series == series:
+                                    # edition = self.ocr.get_edition_number(image,pos)
+                                    if name_card in char_numbers:
+                                        edition = self.ocr.get_edition_number(
+                                            image, pos)
+                                        if edition == char_numbers[name_card]:
+                                            try:
+                                                self.click_reactions(
+                                                    logs, driver, pos)
+                                                print(
+                                                    name_card + " " + series + " " + self.server_name_list)
+                                                logging.info("Got Name: " + name_card + " Series: " + read_series +
+                                                             " Server: " + self.server_name_list + " URL: " + href_link)
+                                                self.clicked_card = name_card.split(' ', 1)[
+                                                    0]
+                                                self.flag_clicked = True
+                                            except:
+                                                error_count += 1
+                                                logging.warning(
+                                                    "Cant Click Edition " + self.server_name_list, exc_info=True)
+                        # logging.info(card_name_list)
+                        pos -= 1
+                    flag_finished = True
+                    # logging.info(card_name_list + " " + href_link)
+                except:
+                    error_count += 1
+                    logging.error("Exception occurred", exc_info=True)
+                    logging.warning(
+                        "Cant get card name:" + href_link + " pos:" + str(pos) + " w:" + str(w))
+            except:
+                logging.warning("Error")
+                logging.error("Exception occurred", exc_info=True)
+                error_count += 1
+
+    def get_webelement_id(self):
+        logging.info("Finding id:" + self.curr_id)
+        logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+        list = []
+        for x in reversed(logs):
+            try:
+                data_list_str = x.get_attribute('id')
+                list.append(data_list_str)
+                logging.info(len(str(self.curr_id)))
+                logging.info("ID")
+                logging.info(len(str(data_list_str)))
+                if str(self.curr_id) == str(data_list_str):
+                    logging.info(str(("ID LIST: ", list)))
+                    return x
+            except:
+                logging.info("Error finding id " + " " +
+                             self.server_name_list, exc_info=True)
+                logging.info(str(("ID LIST: ", list)))
+                # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
+                # logging.info(attrs)
+                # time.sleep(4)
+                break
+        logging.info("Can't find id " + self.server_name_list)
+        logging.info(str(("ID LIST: ", list)))
+
+    def click_reactions(self, logs, driver, pos):
+        global flag_global_clicked
+        global flag_cd_grab
+        try:
+            reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'reactions-12N0jA')))
+            reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, 'reaction-1hd86g')))
+            # reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
+            # print(len(reactions))
+            # print('i:' + str(i))
+            while len(reactions) < pos+1:
+                # print("waiting")
+                reactions = reactions_container.find_elements(
+                    By.CLASS_NAME, 'reaction-1hd86g')
+            if not flag_global_clicked:
+                driver.execute_script("arguments[0].click();", reactions[pos].find_element(
+                    By.CLASS_NAME, 'reactionInner-15NvIl'))
+                flag_global_clicked = True
+                print("clicked 1")
+        except:
+            time.sleep(0.05)
+            logging.info("Failed to Click 1st " +
+                         self.server_name_list, exc_info=True)
+            try:
+                logs = self.get_webelement_id()
+                reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'reactions-12N0jA')))
+                reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
+                    EC.presence_of_all_elements_located((By.CLASS_NAME, 'reaction-1hd86g')))
+                while len(reactions) < pos+1:
+                    # print("waiting")
+                    reactions = reactions_container.find_elements(
+                        By.CLASS_NAME, 'reaction-1hd86g')
+                if not flag_global_clicked:
+                    driver.execute_script("arguments[0].click();", reactions[pos].find_element(
+                        By.CLASS_NAME, 'reactionInner-15NvIl'))
+                    flag_global_clicked = True
+                    print("clicked 2")
+            except:
+                logging.info("Failed to Click 2nd " +
+                             self.server_name_list, exc_info=True)
+
+    def button_click(self, logs, driver, pos):
+        global flag_global_clicked
+        global flag_cd_grab
+        try:
+            reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'children-2goeSq')))
+            reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, 'button-38aScr')))
+            if not flag_global_clicked:
+                WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, 'button-38aScr')))
+                driver.execute_script(
+                    "arguments[0].click();", reactions[pos])
+                flag_global_clicked = True
+                print("clicked 1")
+        except:
+            time.sleep(0.05)
+            logging.info("Failed to Click 1st " +
+                         self.server_name_list, exc_info=True)
+            try:
+                logs = self.get_webelement_id()
+                reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'children-2goeSq')))
+                reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
+                    EC.presence_of_all_elements_located((By.CLASS_NAME, 'button-38aScr')))
+                if not flag_global_clicked:
+                    WebDriverWait(logs, 600, poll_frequency=0.05).until(
+                        EC.element_to_be_clickable((By.CLASS_NAME, 'button-38aScr')))
+                    driver.execute_script(
+                        "arguments[0].click();", reactions[pos])
+                    flag_global_clicked = True
+                    print("clicked 2")
+            except:
+                logging.info("Failed to Click 2nd " +
+                             self.server_name_list, exc_info=True)
+
+    def action_href_img_button(self, logs, driver):
+        global flag_global_clicked
+        global flag_cd_grab
+        # print(logs.text)
+        # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.XPATH,"//img[@style=\"width: 400px; height: 149px;\" or style=\"width: 400px; height: 148px;\"]")))
+        # print(logs.text)
+        error_count = 0
+        flag_finished = False
+        while(error_count < 5 and not flag_finished):
+            # logging.info(logs.text)
+            try:
+                img_container = WebDriverWait(logs, 30, poll_frequency=0.05).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb')))
+                href_link = img_container.get_attribute('href')
+                # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
+                # dimensions = img_container.get_attribute('src')
+                # Faster
+                error_count_image = 0
+                try:
+                    image = url_to_image(href_link)
+                    while image is None:
+                        error_count_image += 1
+                        if error_count_image > 10:
+                            break
+                        logging.info("Cant get image:" +
+                                     href_link + " " + str(error_count_image))
+                        image = url_to_image(href_link)
+                    h, w, c = image.shape
+                except:
+                    time.sleep(0.1)
+                    logging.warning("Cant get image:" + href_link)
+                    logging.warning("Unexpected error:", sys.exc_info()[0])
+                    error_count += 1
+                    continue
+                max = 4 if w > 900 else 3
+                pos = max-1
+                # card_name_list = ""
+                try:
+                    while pos >= 0 and not self.flag_clicked:
+                        print_num = self.ocr.get_print_num(image, pos)
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
+                            name_card = print_num
+                            read_series = print_num
+                            series = print_num
+                            try:
+                                self.button_click(logs, driver, pos)
+                                name_card = self.ocr.get_names_single(
+                                    image, w, pos)
+                                print(str(name_card) + str(series) +
+                                      self.server_name_list)
+                                logging.info("Got Name: " + str(name_card) + " Series: " + str(
+                                    read_series) + " Server: " + self.server_name_list + " URL: " + href_link)
+                                self.clicked_card = name_card.split(' ', 1)[0]
+                                self.flag_clicked = True
+                            except:
+                                error_count += 1
+                                logging.warning(
+                                    "Cant Click Edition " + self.server_name_list, exc_info=True)
+                        # card_name_list += " " + name_card
+                        else:
+                            name_card = self.ocr.get_names_single(
+                                image, w, pos)
+                            if (name_card in self.dict_good_stuff and not flag_global_clicked):
+                                series = self.dict_good_stuff.get(
+                                    name_card, '-1')
+                                read_series = self.ocr.get_names_bottom(
+                                    image, w, pos).split(' ', 1)[0]
+                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
+                                # print("Checking Name: " + name_card + " Series: " + read_series)
+                                if series == '123456' or read_series == series:
+                                    try:
+                                        self.button_click(logs, driver, pos)
+                                        print(name_card + " " + series +
+                                              " " + self.server_name_list)
+                                        logging.info("Got Name: " + name_card + " Series: " + read_series +
+                                                     " Server: " + self.server_name_list + " URL: " + href_link)
+                                        self.clicked_card = name_card.split(' ', 1)[
+                                            0]
+                                        self.flag_clicked = True
+                                    except:
+                                        error_count += 1
+                                        logging.warning(
+                                            "Cant Click Edition " + self.server_name_list, exc_info=True)
+                            elif (name_card in self.dict_good_stuff_addition and not flag_global_clicked):
+                                series = self.dict_good_stuff_addition.get(
+                                    name_card, '-1')
+                                read_series = self.ocr.get_names_bottom(
+                                    image, w, pos).split(' ', 1)[0]
+                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
+                                # print("Checking Name: " + name_card + " Series: " + read_series)
+                                if series == '123456' or read_series == series:
+                                    if name_card in char_numbers:
+                                        edition = self.ocr.get_edition_number(
+                                            image, pos)
+                                        if edition == char_numbers[name_card]:
+                                            try:
+                                                self.button_click(
+                                                    logs, driver, pos)
+                                                print(
+                                                    name_card + " " + series + " " + self.server_name_list)
+                                                logging.info("Got Name: " + name_card + " Series: " + read_series +
+                                                             " Server: " + self.server_name_list + " URL: " + href_link)
+                                                self.clicked_card = name_card.split(' ', 1)[
+                                                    0]
+                                                self.flag_clicked = True
+                                            except:
+                                                error_count += 1
+                                                logging.warning(
+                                                    "Cant Click Edition " + self.server_name_list, exc_info=True)
+                        # logging.info(card_name_list)
+                        pos -= 1
+                    flag_finished = True
+                    # print(card_name_list + " " + href_link)
+                except:
+                    error_count += 1
+                    logging.error("Exception occurred", exc_info=True)
+                    logging.warning(
+                        "Cant get card name:" + href_link + " pos:" + str(pos) + " w:" + str(w))
+            except:
+                logging.warning("Error")
+                logging.error("Exception occurred", exc_info=True)
+                error_count += 1
+
+    def action_href_img_button_dropping(self, logs, driver):
+        if self.counter > 100:
+            if (time.time() - self.time) > self.sleep_timer_drop:
+                logging.warning('Drop')
+                textbox = self.driver.find_element_by_class_name(
+                    'markup-2BOw-j.slateTextArea-1Mkdgw.fontSize16Padding-3Wk7zP')
+                textbox.send_keys('kd')
+                textbox.send_keys(Keys.ENTER)
+                self.time = time.time()
+            self.counter = 0
+        self.counter += 1
+        self.action_href_img_button(logs, driver)
+
+    def start_up(self):
+        self.login_sign()
+        self.message_log(self.condition_BOT_droppping, self.action_href_img)
+
+    def start_up_button(self):
+        self.login_sign()
+        self.message_log(self.condition_BOT_droppping,
+                         self.action_href_img_button)
+
+    def start_up_button_dropping(self):
+        self.login_sign()
+        self.message_log(self.condition_BOT_droppping,
+                         self.action_href_img_button_dropping)
+
+    def start_up_server(self):
+        self.login_sign()
+        self.message_log(self.condition_BOT_droppping_Server,
+                         self.action_href_img)
+
+    def start_up_kd(self):
+        self.login_sign()
+        self.kd_every()
