@@ -45,3 +45,9 @@ Remade Repository because of sensitive information leaked sorry.
     py main.py
     ```
 
+## TODO
+
+* Stale Web Elements (Redo searching logic)
+* String similary match (% similarity or some closet neighbor serach)
+* UI interface (Low prio)
+* Exe file (Low prio)
