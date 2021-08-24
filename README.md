@@ -6,7 +6,7 @@ Discord Scraper made with python, selenium, openCV and tesseract(OCR)
 
 Filters through messages selecting matching images to react with.
 
-
+Remade Repository because of sensitive information leaked sorry.
 
 ## Built With
 
