@@ -563,28 +563,7 @@ class Discord_Scraper:
         flag_debug = not flag_debug
 
     def get_webelement_id(self):
-        
-        logging.info("Finding id:" + self.curr_id)
-        logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
-        list = []
-        for x in reversed(logs):
-            try:
-                data_list_str = x.get_attribute('id')
-                list.append(data_list_str)
-                if str(self.curr_id) == str(data_list_str):
-                    logging.info(str(("ID LIST: ", list)))
-                    return x
-            except:
-                logging.info("Error finding id " + " " +
-                             self.server_name_list, exc_info=True)
-                logging.info(str(("ID LIST: ", list)))
-                # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
-                # logging.info(attrs)
-                # time.sleep(4)
-                break
-        logging.info("Can't find id " + self.server_name_list)
-        logging.info(str(("ID LIST: ", list)))
+        return self.driver.find_element_by_id(self.curr_id)
 
     def click_reactions(self, logs, driver, pos):
         global flag_global_clicked
