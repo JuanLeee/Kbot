@@ -224,31 +224,31 @@ for server_name, channel_name,server_name_list in zip(server_list_button, channe
     time.sleep(10)
 
 
-driver_temp = webdriver.Chrome(options=chrome_options)
+# driver_temp = webdriver.Chrome(options=chrome_options)
 
 
-action=ActionChains(driver_temp)
-drivers_list.append(driver_temp)
-action_list.append(action)
-temp_ds = Discord_Scraper(driver_temp, action ,user_name1, password1, 'guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,id_name1,False)
-x = threading.Thread(target=temp_ds.start_up_button_dropping,args=())
-threads.append(x)
-discord_scrapers.append(temp_ds)
-x.start()
-time.sleep(30)
+# action=ActionChains(driver_temp)
+# drivers_list.append(driver_temp)
+# action_list.append(action)
+# temp_ds = Discord_Scraper(driver_temp, action ,user_name1, password1, 'guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,id_name1,False)
+# x = threading.Thread(target=temp_ds.start_up_button_dropping,args=())
+# threads.append(x)
+# discord_scrapers.append(temp_ds)
+# x.start()
+# time.sleep(30)
 
-driver_temp = webdriver.Chrome(options=chrome_options)
+# driver_temp = webdriver.Chrome(options=chrome_options)
 
 
-action=ActionChains(driver_temp)
-drivers_list.append(driver_temp)
-action_list.append(action)
-temp_ds = Discord_Scraper(driver_temp, action ,user_name1,password1, 'guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,id_name1,False)
-x = threading.Thread(target=temp_ds.start_up_button,args=())
-threads.append(x)
-discord_scrapers.append(temp_ds)
-x.start()
-time.sleep(10)
+# action=ActionChains(driver_temp)
+# drivers_list.append(driver_temp)
+# action_list.append(action)
+# temp_ds = Discord_Scraper(driver_temp, action ,user_name1,password1, 'guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,id_name1,False)
+# x = threading.Thread(target=temp_ds.start_up_button,args=())
+# threads.append(x)
+# discord_scrapers.append(temp_ds)
+# x.start()
+# time.sleep(10)
 
 # second
 # driver_temp = webdriver.Chrome(options=chrome_options)
@@ -295,14 +295,6 @@ time.sleep(10)
 
 # driver_temp = webdriver.Chrome(options=chrome_options)
 
-# # stealth(driver_temp,
-# #         languages=["en-US", "en"],
-# #         vendor="Google Inc.",
-# #         platform="Win32",
-# #         webgl_vendor="Intel Inc.",
-# #         renderer="Intel Iris OpenGL Engine",
-# #         fix_hairline=True,
-# #         )
 # action=ActionChains(driver_temp)
 # drivers_list.append(driver_temp)
 # action_list.append(action)
@@ -324,6 +316,11 @@ while not flag_stop:
             d.flag_stop_true()
             t.join()
         break
+    elif input() == 'd':
+        for t,d in zip(threads,discord_scrapers):
+            d.debug_on()
+    time.sleep(5)
 
 
 
+ 

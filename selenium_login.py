@@ -29,6 +29,8 @@ load_dotenv()
 
 class Discord_Scraper:
     def __init__(self, driver, action, user_name, password, server_name, channel_name, server_name_list, flag_server, id_name, timer):
+        self.hash_table = {}
+        self.count_messages = 0
         self.driver = driver
         self.action = action
         self.user_name = user_name
@@ -36,11 +38,13 @@ class Discord_Scraper:
         self.server_name = server_name
         self.server_name_list = server_name_list
         self.channel_name = channel_name
+        global flag_debug
         global flag_cd_grab
         global flag_cd_grab_long
         global flag_global_clicked
         global flag_refresh
         global flag_stop
+        flag_debug = False
         flag_refresh = False
         flag_global_clicked = False
         self.clicked_card = ''
@@ -79,8 +83,7 @@ class Discord_Scraper:
         self.time = time.time()
         self.counter = 50
 
-        self.disc_webhook = 'https://discord.com/api/webhooks/860683085464338442/o6zcHnSaFcJ-XR2ojwz2KM5boFIENoIe5ZoTnvuWajz6XecyqSn8nQEwS6ZWVkwFd7Om'\
-
+        self.disc_webhook = 'https://discord.com/api/webhooks/777167433672163348/QKrMMfSmg9PbLd6HYxZc_1t4T0pB1qtJvpXu8RuKF3VYi38oZOLe7nPdyWnKonp2JMg5'
 
     def login_sign(self):
         error_count = 0
@@ -109,25 +112,25 @@ class Discord_Scraper:
                 print("Trying if School Pop up")
                 try:
                     hcaptcha = WebDriverWait(self.driver, 5).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'colorHeaderSecondary-3Sp3Ft')))
+                        EC.presence_of_element_located((By.CLASS_NAME, 'flexCenter-3_1bcw')))
                     print("HCaptcha")
-                    pop_up = WebDriverWait(self.driver, 120).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
-                    pop_up_button = WebDriverWait(pop_up, 20).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
-                    self.driver.execute_script(
-                        "arguments[0].click();", pop_up_button)
+                    # pop_up = WebDriverWait(self.driver, 120).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                    # pop_up_button = WebDriverWait(pop_up, 20).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                    # self.driver.execute_script(
+                    #     "arguments[0].click();", pop_up_button)
                     print("School Pop up")
                 except:
                     print("No HCaptcha")
                     # logging.error("Exception occurred", exc_info=True)
                     try:
-                        pop_up = WebDriverWait(self.driver, 5).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
-                        pop_up_button = WebDriverWait(pop_up, 5).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
-                        self.driver.execute_script(
-                            "arguments[0].click();", pop_up_button)
+                        # pop_up = WebDriverWait(self.driver, 5).until(
+                        #     EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                        # pop_up_button = WebDriverWait(pop_up, 5).until(
+                        #     EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                        # self.driver.execute_script(
+                        #     "arguments[0].click();", pop_up_button)
                         print("School Pop up")
                     except:
                         print("School No Pop up")
@@ -142,10 +145,10 @@ class Discord_Scraper:
                 print("Trying to see if pop up")
 
                 try:
-                    pop_up = WebDriverWait(self.driver, 5).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'focusLock-Ns3yie')))
-                    self.driver.execute_script("arguments[0].click();", WebDriverWait(pop_up, 10).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'button-38aScr'))))
+                    # pop_up = WebDriverWait(self.driver, 5).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'focusLock-Ns3yie')))
+                    # self.driver.execute_script("arguments[0].click();", WebDriverWait(pop_up, 5).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'button-38aScr'))))
                     print("Pop up")
                 except:
                     print("No Pop up")
@@ -182,6 +185,7 @@ class Discord_Scraper:
                 time.sleep(5)
 
     def message_log(self, f_condition, f_action):
+        global flag_debug
         global flag_refresh
         global flag_global_clicked
         global flag_cd_grab
@@ -210,20 +214,19 @@ class Discord_Scraper:
         for n in range(1, 15):
             WebDriverWait(self.driver, 120, poll_frequency=0.05).until(EC.presence_of_all_elements_located(
                 (By.CLASS_NAME, 'message-2qnXI6')))[-1].send_keys(Keys.ARROW_DOWN)
-        logs_list = []
-
-        n = 5
+        n = 20
+        self.current_state_fill_hash(n)
         count_clear = 0
         while not flag_stop:
             try:
                 logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                     EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                 # logs = log.find_elements(By.CLASS_NAME,'message-2qnXI6')
-                temp_list = []
-                for j in range(1, n):
 
+                for j in range(1, n):
                     z = -1 * j
-                    # print(z)
+                    if flag_debug:
+                        print(z)
                     try:
                         data_list_str = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))[z].get_attribute('id')
@@ -238,9 +241,12 @@ class Discord_Scraper:
                             "NO ATTRIBUTES START END", exc_info=True)
                         # time.sleep(4)
                         break
-                    temp_list.append(data_list_str)
+
                     # print(data_list_str)
-                    if data_list_str not in logs_list:
+                    if data_list_str not in self.hash_table:
+                        self.hash_table[data_list_str] = self.count_messages
+                        self.count_messages += 1
+                        # print(data_list_str)
                         temp_log = logs[z]
                         # print(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))[z].text)
                         # print(temp_log.get_attribute('data-list-item-id'))
@@ -261,7 +267,7 @@ class Discord_Scraper:
                                                          content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
                                 logging.info("Evasion Proc")
                                 webhook.execute()
-                                logs_list = temp_list + logs_list
+
                                 break
                             elif self.id_name + ' fought off' in text or self.id_name + ' took the' in text:
                                 self.count_clicked = self.count_reset
@@ -272,25 +278,28 @@ class Discord_Scraper:
                                 webhook = DiscordWebhook(url=self.disc_webhook, rate_limit_retry=True,
                                                          content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
                                 response = webhook.execute()
-
-                                time.sleep(self.sleep_timer_grab)
+                                self.clean_hash_table()
+                                time.sleep(self.sleep_timer_grab-1)
+                                self.current_state_fill_hash(n)
                                 flag_cd_grab_long = True
                                 flag_cd_grab = True
                                 flag_global_clicked = False
                                 print("Exit: " + self.server_name_list)
-                                logs_list = temp_list + logs_list
+
                                 break
                             elif self.count_clicked <= 0 or self.clicked_card in text.lower():
                                 print("Fled")
                                 self.count_clicked = self.count_reset
                                 self.flag_clicked = False
                                 flag_cd_grab = False
-                                time.sleep(60)
+                                self.clean_hash_table()
+                                time.sleep(59)
+                                self.current_state_fill_hash(n)
                                 flag_cd_grab = True
                                 flag_cd_grab_long = True
                                 flag_global_clicked = False
                                 print("Exit: " + self.server_name_list)
-                                logs_list = temp_list + logs_list
+
                                 break
                         elif f_condition(temp_log):
                             # print("Condition")
@@ -304,37 +313,77 @@ class Discord_Scraper:
                             #         reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
                             #     driver.execute_script("arguments[0].click();", reactions[pos-1].find_element(By.CLASS_NAME,'reactionInner-15NvIl'))
                             # # find_element_by_class_name('reactions-12N0jA')
-                logs_list = temp_list
+                    else:
+                        break
                 if not flag_cd_grab:
                     print("Enter: " + self.server_name_list)
                     self.count_clicked = self.count_reset
                     self.flag_clicked = False
-                    sleep(60)
+                    self.clean_hash_table()
+                    time.sleep(59)
                     # flag_cd_grab = True
                     # flag_cd_grab_long = True
                     # flag_global_clicked = False
+                    print("Exit: " + self.server_name_list)
+                    self.current_state_fill_hash(n)
                     logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                         EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
-                    print("Exit: " + self.server_name_list)
                 elif not flag_cd_grab_long:
                     print("Enter: " + self.server_name_list)
                     self.count_clicked = self.count_reset
                     self.flag_clicked = False
-                    sleep(self.sleep_timer_grab)
+                    self.clean_hash_table()
+                    time.sleep(self.sleep_timer_grab-1)
+
                     # flag_cd_grab = True
                     # flag_cd_grab_long = True
                     # flag_global_clicked = False
+                    print("Exit: " + self.server_name_list)
+                    self.current_state_fill_hash(n)
                     logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                         EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
-                    print("Exit: " + self.server_name_list)
-                sleep(interval)
+                time.sleep(interval)
             except:
-                logging.warning("Error ml "+ self.server_name_list)
+                logging.warning("Error ml " + self.server_name_list)
                 logging.error("Exception occurred", exc_info=True)
             if flag_stop:
                 self.driver.quit()
                 print("Quit " + self.server_name_list)
                 break
+
+    def clean_hash_table(self):
+        print("Cleaning Hash Table")
+        for key, value in list(self.hash_table.items()):
+            if value < (self.count_messages-100):
+                del self.hash_table[key]
+
+    def current_state_fill_hash(self, n):
+        try:
+            print("Filling hash table")
+            logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+            for j in range(1, n):
+                z = -1 * j
+                try:
+                    data_list_str = logs[z].get_attribute('id')
+                    if data_list_str not in self.hash_table:
+                        self.hash_table[data_list_str] = self.count_messages
+                        self.count_messages += 1
+                    else:
+                        break
+                except:
+                    logging.info("NO ATTRIBUTES START" +
+                                 " " + self.server_name_list)
+                    logging.info(str(z) + " FAILED " + self.curr_id)
+                    # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
+                    # logging.info(attrs)
+                    logging.warning(
+                        "NO ATTRIBUTES START END", exc_info=True)
+                    # time.sleep(4)
+                    break
+        except:
+            logging.warning(
+                "Failed Filling", exc_info=True)
 
     def kd_every(self):
         global flag_refresh
@@ -366,7 +415,7 @@ class Discord_Scraper:
     def condition_BOT_droppping(self, logs):
         # print(logs.text)
         try:
-            if "dropping 4 cards!" in logs.text or "dropping 3 cards!" in logs.text:
+            if "dropping 4 cards" in logs.text or "dropping 3 cards" in logs.text:
                 if WebDriverWait(logs, 30, poll_frequency=0.05).until(EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb'))):
                     return True
         except:
@@ -509,7 +558,12 @@ class Discord_Scraper:
                 logging.error("Exception occurred", exc_info=True)
                 error_count += 1
 
+    def debug_on(self):
+        global flag_debug
+        flag_debug = not flag_debug
+
     def get_webelement_id(self):
+        
         logging.info("Finding id:" + self.curr_id)
         logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
@@ -518,9 +572,6 @@ class Discord_Scraper:
             try:
                 data_list_str = x.get_attribute('id')
                 list.append(data_list_str)
-                logging.info(len(str(self.curr_id)))
-                logging.info("ID")
-                logging.info(len(str(data_list_str)))
                 if str(self.curr_id) == str(data_list_str):
                     logging.info(str(("ID LIST: ", list)))
                     return x
