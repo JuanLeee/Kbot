@@ -83,7 +83,7 @@ class Discord_Scraper:
         self.time = time.time()
         self.counter = 50
 
-        self.disc_webhook = 'https://discord.com/api/webhooks/777167433672163348/QKrMMfSmg9PbLd6HYxZc_1t4T0pB1qtJvpXu8RuKF3VYi38oZOLe7nPdyWnKonp2JMg5'
+        self.disc_webhook = os.getenv('DISCORD_LINK')
 
     def login_sign(self):
         error_count = 0
