@@ -183,72 +183,72 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+# driver_temp = webdriver.Chrome(options=chrome_options)
+
+
+# action=ActionChains(driver_temp)
+# drivers_list.append(driver_temp)
+# action_list.append(action)
+# temp_ds = Discord_Scraper(driver_temp, action ,user_name, password, 'guildsnav___817561247062818829', 'channels___817563077816877116','XO',False,id_name,True)
+# x = threading.Thread(target=temp_ds.start_up_kd,args=())
+# threads.append(x)
+# discord_scrapers.append(temp_ds)
+# x.start()
+# time.sleep(10)
+
+# for server_name, channel_name,server_name_list in zip(server_list, channel_list,server_name_list):
+#     driver = webdriver.Chrome(options=chrome_options)
+
+#     action= ActionChains(driver)
+#     drivers_list.append(driver)
+#     action_list.append(action)
+#     temp_ds = Discord_Scraper(driver, action ,user_name, password, server_name, channel_name,server_name_list,False,id_name,True)
+#     x = threading.Thread(target=temp_ds.start_up,args=())
+#     discord_scrapers.append(temp_ds)
+#     threads.append(x)
+#     x.start()
+#     time.sleep(10)
+
+    
+# for server_name, channel_name,server_name_list in zip(server_list_button, channel_list_button,server_name_list_button):
+#     driver = webdriver.Chrome(options=chrome_options)
+
+#     action= ActionChains(driver)
+#     drivers_list.append(driver)
+#     action_list.append(action)
+#     temp_ds = Discord_Scraper(driver, action ,user_name, password, server_name, channel_name,server_name_list,False,id_name,True)
+#     x = threading.Thread(target=temp_ds.start_up_button,args=())
+#     discord_scrapers.append(temp_ds)
+#     threads.append(x)
+#     x.start()
+#     time.sleep(10)
+
+
 driver_temp = webdriver.Chrome(options=chrome_options)
 
 
 action=ActionChains(driver_temp)
 drivers_list.append(driver_temp)
 action_list.append(action)
-temp_ds = Discord_Scraper(driver_temp, action ,user_name, password, 'guildsnav___817561247062818829', 'channels___817563077816877116','XO',False,id_name,True)
-x = threading.Thread(target=temp_ds.start_up_kd,args=())
+temp_ds = Discord_Scraper(driver_temp, action ,user_name1, password1, 'guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,id_name1,False)
+x = threading.Thread(target=temp_ds.start_up_button_dropping,args=())
+threads.append(x)
+discord_scrapers.append(temp_ds)
+x.start()
+time.sleep(30)
+
+driver_temp = webdriver.Chrome(options=chrome_options)
+
+
+action=ActionChains(driver_temp)
+drivers_list.append(driver_temp)
+action_list.append(action)
+temp_ds = Discord_Scraper(driver_temp, action ,user_name1,password1, 'guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,id_name1,False)
+x = threading.Thread(target=temp_ds.start_up_button,args=())
 threads.append(x)
 discord_scrapers.append(temp_ds)
 x.start()
 time.sleep(10)
-
-for server_name, channel_name,server_name_list in zip(server_list, channel_list,server_name_list):
-    driver = webdriver.Chrome(options=chrome_options)
-
-    action= ActionChains(driver)
-    drivers_list.append(driver)
-    action_list.append(action)
-    temp_ds = Discord_Scraper(driver, action ,user_name, password, server_name, channel_name,server_name_list,False,id_name,True)
-    x = threading.Thread(target=temp_ds.start_up,args=())
-    discord_scrapers.append(temp_ds)
-    threads.append(x)
-    x.start()
-    time.sleep(10)
-
-    
-for server_name, channel_name,server_name_list in zip(server_list_button, channel_list_button,server_name_list_button):
-    driver = webdriver.Chrome(options=chrome_options)
-
-    action= ActionChains(driver)
-    drivers_list.append(driver)
-    action_list.append(action)
-    temp_ds = Discord_Scraper(driver, action ,user_name, password, server_name, channel_name,server_name_list,False,id_name,True)
-    x = threading.Thread(target=temp_ds.start_up_button,args=())
-    discord_scrapers.append(temp_ds)
-    threads.append(x)
-    x.start()
-    time.sleep(10)
-
-
-# driver_temp = webdriver.Chrome(options=chrome_options)
-
-
-# action=ActionChains(driver_temp)
-# drivers_list.append(driver_temp)
-# action_list.append(action)
-# temp_ds = Discord_Scraper(driver_temp, action ,user_name1, password1, 'guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,id_name1,False)
-# x = threading.Thread(target=temp_ds.start_up_button_dropping,args=())
-# threads.append(x)
-# discord_scrapers.append(temp_ds)
-# x.start()
-# time.sleep(30)
-
-# driver_temp = webdriver.Chrome(options=chrome_options)
-
-
-# action=ActionChains(driver_temp)
-# drivers_list.append(driver_temp)
-# action_list.append(action)
-# temp_ds = Discord_Scraper(driver_temp, action ,user_name1,password1, 'guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,id_name1,False)
-# x = threading.Thread(target=temp_ds.start_up_button,args=())
-# threads.append(x)
-# discord_scrapers.append(temp_ds)
-# x.start()
-# time.sleep(10)
 
 # second
 # driver_temp = webdriver.Chrome(options=chrome_options)
