@@ -114,23 +114,23 @@ class Discord_Scraper:
                     hcaptcha = WebDriverWait(self.driver, 5).until(
                         EC.presence_of_element_located((By.CLASS_NAME, 'flexCenter-3_1bcw')))
                     print("HCaptcha")
-                    # pop_up = WebDriverWait(self.driver, 120).until(
-                    #     EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
-                    # pop_up_button = WebDriverWait(pop_up, 20).until(
-                    #     EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
-                    # self.driver.execute_script(
-                    #     "arguments[0].click();", pop_up_button)
+                    pop_up = WebDriverWait(self.driver, 120).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                    pop_up_button = WebDriverWait(pop_up, 20).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                    self.driver.execute_script(
+                        "arguments[0].click();", pop_up_button)
                     print("School Pop up")
                 except:
                     print("No HCaptcha")
                     # logging.error("Exception occurred", exc_info=True)
                     try:
-                        # pop_up = WebDriverWait(self.driver, 5).until(
-                        #     EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
-                        # pop_up_button = WebDriverWait(pop_up, 5).until(
-                        #     EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
-                        # self.driver.execute_script(
-                        #     "arguments[0].click();", pop_up_button)
+                        pop_up = WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'content-1LAB8Z')))
+                        pop_up_button = WebDriverWait(pop_up, 5).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'close-hZ94c6')))
+                        self.driver.execute_script(
+                            "arguments[0].click();", pop_up_button)
                         print("School Pop up")
                     except:
                         print("School No Pop up")
@@ -145,10 +145,10 @@ class Discord_Scraper:
                 print("Trying to see if pop up")
 
                 try:
-                    # pop_up = WebDriverWait(self.driver, 5).until(
-                    #     EC.presence_of_element_located((By.CLASS_NAME, 'focusLock-Ns3yie')))
-                    # self.driver.execute_script("arguments[0].click();", WebDriverWait(pop_up, 5).until(
-                    #     EC.presence_of_element_located((By.CLASS_NAME, 'button-38aScr'))))
+                    pop_up = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'focusLock-Ns3yie')))
+                    self.driver.execute_script("arguments[0].click();", WebDriverWait(pop_up, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'button-38aScr'))))
                     print("Pop up")
                 except:
                     print("No Pop up")
@@ -219,8 +219,6 @@ class Discord_Scraper:
         count_clear = 0
         while not flag_stop:
             try:
-                logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                    EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                 # logs = log.find_elements(By.CLASS_NAME,'message-2qnXI6')
 
                 for j in range(1, n):
@@ -228,13 +226,14 @@ class Discord_Scraper:
                     if flag_debug:
                         print(z)
                     try:
-                        data_list_str = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))[z].get_attribute('id')
+                        logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                            EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                        data_list_str = logs[z].get_attribute('id')
                         self.curr_id = str(data_list_str)
                     except:
                         logging.info("NO ATTRIBUTES START" +
                                      " " + self.server_name_list)
-                        logging.info(str(z) + " FAILED " + self.curr_id)
+                        logging.info(str(z) + " FAILED ")
                         # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
                         # logging.info(attrs)
                         logging.warning(
@@ -247,14 +246,15 @@ class Discord_Scraper:
                         self.hash_table[data_list_str] = self.count_messages
                         self.count_messages += 1
                         # print(data_list_str)
-                        temp_log = logs[z]
                         # print(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))[z].text)
                         # print(temp_log.get_attribute('data-list-item-id'))
                         # print(curr_message)
+                        text = self.driver.find_element_by_id(
+                            self.curr_id).text
                         # logging.info(temp_log.text)
                         if self.flag_clicked:
                             self.count_clicked -= 1
-                            text = temp_log.text
+                            # text = self.driver.find_element_by_id(self.curr_id).text
                             # logging.info(text)
                             # logging.INFO(text)
                             if self.id_name + ', your Evasion' in text:
@@ -277,7 +277,7 @@ class Discord_Scraper:
                                 print("Gottem")
                                 webhook = DiscordWebhook(url=self.disc_webhook, rate_limit_retry=True,
                                                          content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
-                                response = webhook.execute()
+                                webhook.execute()
                                 self.clean_hash_table()
                                 time.sleep(self.sleep_timer_grab-1)
                                 self.current_state_fill_hash(n)
@@ -301,9 +301,9 @@ class Discord_Scraper:
                                 print("Exit: " + self.server_name_list)
 
                                 break
-                        elif f_condition(temp_log):
+                        elif f_condition(text):
                             # print("Condition")
-                            f_action(temp_log, self.driver)
+                            f_action()
                             # pos = get_position_hash(href_link,hash_table)
                             # print(pos)
                             # if pos > -1:
@@ -326,8 +326,8 @@ class Discord_Scraper:
                     # flag_global_clicked = False
                     print("Exit: " + self.server_name_list)
                     self.current_state_fill_hash(n)
-                    logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                        EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                    # logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                    #     EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                 elif not flag_cd_grab_long:
                     print("Enter: " + self.server_name_list)
                     self.count_clicked = self.count_reset
@@ -340,8 +340,8 @@ class Discord_Scraper:
                     # flag_global_clicked = False
                     print("Exit: " + self.server_name_list)
                     self.current_state_fill_hash(n)
-                    logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                        EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+                    # logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
+                    #     EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                 time.sleep(interval)
             except:
                 logging.warning("Error ml " + self.server_name_list)
@@ -412,21 +412,21 @@ class Discord_Scraper:
         self.driver.quit()
         print("Quit DROP " + self.server_name_list)
 
-    def condition_BOT_droppping(self, logs):
+    def condition_BOT_droppping(self, text):
         # print(logs.text)
         try:
-            if "dropping 4 cards" in logs.text or "dropping 3 cards" in logs.text:
-                if WebDriverWait(logs, 30, poll_frequency=0.05).until(EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb'))):
+            if "dropping 4 cards" in text or "dropping 3 cards" in text:
+                if self.driver.find_element_by_id(self.curr_id).find_element_by_class_name('anchor-3Z-8Bb'):
                     return True
         except:
             return False
         return False
 
-    def condition_BOT_droppping_Server(self, logs):
+    def condition_BOT_droppping_Server(self, text):
         # print(logs.text)
         try:
-            if "cards since this server is currently active!" in logs.text:
-                if WebDriverWait(logs, 30, poll_frequency=0.05).until(EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb'))):
+            if "cards since this server is currently active!" in text:
+                if self.driver.find_element_by_id(self.curr_id).find_element_by_class_name('anchor-3Z-8Bb'):
                     return True
         except:
             return False
@@ -438,7 +438,7 @@ class Discord_Scraper:
         self.driver.quit()
         print("Quit " + self.server_name_list)
 
-    def action_href_img(self, logs, driver):
+    def action_href_img(self):
         global flag_global_clicked
         global flag_cd_grab
         # print(logs.text)
@@ -449,8 +449,8 @@ class Discord_Scraper:
         while(error_count < 3 and not flag_finished):
             # logging.info(logs.text)
             try:
-                img_container = WebDriverWait(logs, 30, poll_frequency=0.05).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb')))
+                img_container = self.driver.find_element_by_id(
+                    self.curr_id).find_element_by_class_name('anchor-3Z-8Bb')
                 href_link = img_container.get_attribute('href')
                 # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
                 # dimensions = img_container.get_attribute('src')
@@ -482,7 +482,7 @@ class Discord_Scraper:
                             read_series = print_num
                             series = print_num
                             try:
-                                self.click_reactions(logs, driver, pos)
+                                self.click_reactions(pos)
                                 name_card = self.ocr.get_names_single(
                                     image, w, pos)
                                 print(str(name_card) + str(series) +
@@ -505,7 +505,7 @@ class Discord_Scraper:
                                     image, w, pos).split(' ', 1)[0]
                                 if series == '123456' or read_series == series:
                                     try:
-                                        self.click_reactions(logs, driver, pos)
+                                        self.click_reactions(pos)
                                         print(name_card + " " + series +
                                               " " + self.server_name_list)
                                         logging.info("Got Name: " + name_card + " Series: " + read_series +
@@ -532,7 +532,7 @@ class Discord_Scraper:
                                         if edition == char_numbers[name_card]:
                                             try:
                                                 self.click_reactions(
-                                                    logs, driver, pos)
+                                                    pos)
                                                 print(
                                                     name_card + " " + series + " " + self.server_name_list)
                                                 logging.info("Got Name: " + name_card + " Series: " + read_series +
@@ -565,11 +565,12 @@ class Discord_Scraper:
     def get_webelement_id(self):
         return self.driver.find_element_by_id(self.curr_id)
 
-    def click_reactions(self, logs, driver, pos):
+    def click_reactions(self, pos):
         global flag_global_clicked
         global flag_cd_grab
         try:
-            reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
+            reactions_container = WebDriverWait(self.driver.find_element_by_id(
+                self.curr_id), 600, poll_frequency=0.05).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'reactions-12N0jA')))
             reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
                 EC.presence_of_all_elements_located((By.CLASS_NAME, 'reaction-1hd86g')))
@@ -581,7 +582,7 @@ class Discord_Scraper:
                 reactions = reactions_container.find_elements(
                     By.CLASS_NAME, 'reaction-1hd86g')
             if not flag_global_clicked:
-                driver.execute_script("arguments[0].click();", reactions[pos].find_element(
+                self.driver.execute_script("arguments[0].click();", reactions[pos].find_element(
                     By.CLASS_NAME, 'reactionInner-15NvIl'))
                 flag_global_clicked = True
                 print("clicked 1")
@@ -600,7 +601,7 @@ class Discord_Scraper:
                     reactions = reactions_container.find_elements(
                         By.CLASS_NAME, 'reaction-1hd86g')
                 if not flag_global_clicked:
-                    driver.execute_script("arguments[0].click();", reactions[pos].find_element(
+                    self.driver.execute_script("arguments[0].click();", reactions[pos].find_element(
                         By.CLASS_NAME, 'reactionInner-15NvIl'))
                     flag_global_clicked = True
                     print("clicked 2")
@@ -608,10 +609,12 @@ class Discord_Scraper:
                 logging.info("Failed to Click 2nd " +
                              self.server_name_list, exc_info=True)
 
-    def button_click(self, logs, driver, pos):
+    def button_click(self, pos):
         global flag_global_clicked
         global flag_cd_grab
         try:
+            logs = self.driver.find_element_by_id(
+                self.curr_id)
             reactions_container = WebDriverWait(logs, 600, poll_frequency=0.05).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'children-2goeSq')))
             reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
@@ -619,7 +622,7 @@ class Discord_Scraper:
             if not flag_global_clicked:
                 WebDriverWait(logs, 600, poll_frequency=0.05).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, 'button-38aScr')))
-                driver.execute_script(
+                self.driver.execute_script(
                     "arguments[0].click();", reactions[pos])
                 flag_global_clicked = True
                 print("clicked 1")
@@ -636,7 +639,7 @@ class Discord_Scraper:
                 if not flag_global_clicked:
                     WebDriverWait(logs, 600, poll_frequency=0.05).until(
                         EC.element_to_be_clickable((By.CLASS_NAME, 'button-38aScr')))
-                    driver.execute_script(
+                    self.driver.execute_script(
                         "arguments[0].click();", reactions[pos])
                     flag_global_clicked = True
                     print("clicked 2")
@@ -644,7 +647,7 @@ class Discord_Scraper:
                 logging.info("Failed to Click 2nd " +
                              self.server_name_list, exc_info=True)
 
-    def action_href_img_button(self, logs, driver):
+    def action_href_img_button(self):
         global flag_global_clicked
         global flag_cd_grab
         # print(logs.text)
@@ -655,8 +658,8 @@ class Discord_Scraper:
         while(error_count < 5 and not flag_finished):
             # logging.info(logs.text)
             try:
-                img_container = WebDriverWait(logs, 30, poll_frequency=0.05).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'anchor-3Z-8Bb')))
+                img_container = self.driver.find_element_by_id(
+                    self.curr_id).find_element_by_class_name('anchor-3Z-8Bb')
                 href_link = img_container.get_attribute('href')
                 # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
                 # dimensions = img_container.get_attribute('src')
@@ -689,7 +692,7 @@ class Discord_Scraper:
                             read_series = print_num
                             series = print_num
                             try:
-                                self.button_click(logs, driver, pos)
+                                self.button_click(pos)
                                 name_card = self.ocr.get_names_single(
                                     image, w, pos)
                                 print(str(name_card) + str(series) +
@@ -715,7 +718,7 @@ class Discord_Scraper:
                                 # print("Checking Name: " + name_card + " Series: " + read_series)
                                 if series == '123456' or read_series == series:
                                     try:
-                                        self.button_click(logs, driver, pos)
+                                        self.button_click(pos)
                                         print(name_card + " " + series +
                                               " " + self.server_name_list)
                                         logging.info("Got Name: " + name_card + " Series: " + read_series +
@@ -741,7 +744,7 @@ class Discord_Scraper:
                                         if edition == char_numbers[name_card]:
                                             try:
                                                 self.button_click(
-                                                    logs, driver, pos)
+                                                    pos)
                                                 print(
                                                     name_card + " " + series + " " + self.server_name_list)
                                                 logging.info("Got Name: " + name_card + " Series: " + read_series +
@@ -767,7 +770,7 @@ class Discord_Scraper:
                 logging.error("Exception occurred", exc_info=True)
                 error_count += 1
 
-    def action_href_img_button_dropping(self, logs, driver):
+    def action_href_img_button_dropping(self):
         if self.counter > 100:
             if (time.time() - self.time) > self.sleep_timer_drop:
                 logging.warning('Drop')
@@ -778,7 +781,7 @@ class Discord_Scraper:
                 self.time = time.time()
             self.counter = 0
         self.counter += 1
-        self.action_href_img_button(logs, driver)
+        self.action_href_img_button()
 
     def start_up(self):
         self.login_sign()
