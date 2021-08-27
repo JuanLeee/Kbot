@@ -63,7 +63,7 @@ Remade Repository because of sensitive information leaked sorry.
    * Channel Class Identifier
      * Found through debug on discord page of channel of interest
 
-7. Make main script with Object Main
+7. Make main_startup script with Object Main
    ```sh
    user_name = os.getenv('DISCORD_USER_NAME')
    password = os.getenv('DISCORD_PASSWORD')
