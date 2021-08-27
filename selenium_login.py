@@ -28,7 +28,7 @@ load_dotenv()
 
 
 class Discord_Scraper:
-    def __init__(self, driver, action, user_name, password, server_name, channel_name, server_name_list, flag_server, id_name, timer):
+    def __init__(self, driver, action, user_name, password, server_name, channel_name, server_name_list, id_name, timer):
         self.hash_table = {}
         self.count_messages = 0
         self.driver = driver
@@ -51,7 +51,6 @@ class Discord_Scraper:
         self.flag_clicked = False
         self.count_reset = 10
         self.count_clicked = self.count_reset
-        self.flag_server = flag_server
         self.id_name = id_name
         self.curr_id = ''
         if timer:
@@ -279,7 +278,7 @@ class Discord_Scraper:
                                                          content=self.user_name + ' got ' + self.clicked_card + ' in ' + self.server_name_list)
                                 webhook.execute()
                                 self.clean_hash_table()
-                                time.sleep(self.sleep_timer_grab-1)
+                                time.sleep(self.sleep_timer_grab)
                                 self.current_state_fill_hash(n)
                                 flag_cd_grab_long = True
                                 flag_cd_grab = True
@@ -293,7 +292,7 @@ class Discord_Scraper:
                                 self.flag_clicked = False
                                 flag_cd_grab = False
                                 self.clean_hash_table()
-                                time.sleep(59)
+                                time.sleep(60)
                                 self.current_state_fill_hash(n)
                                 flag_cd_grab = True
                                 flag_cd_grab_long = True
@@ -460,16 +459,19 @@ class Discord_Scraper:
                     image = url_to_image(href_link)
                     while image is None:
                         error_count_image += 1
-                        if error_count_image > 10:
+                        if error_count_image > 3:
                             break
                         logging.info("Cant get image:" +
                                      href_link + " " + str(error_count_image))
                         image = url_to_image(href_link)
                     h, w, c = image.shape
                 except:
+                    
                     logging.warning("Cant get image:" + href_link)
                     logging.warning("Unexpected error:", sys.exc_info()[0])
                     error_count += 1
+                    if error_count_image > 3:
+                            break
                     continue
                 max = 4 if w > 900 else 3
                 pos = max-1
@@ -484,7 +486,7 @@ class Discord_Scraper:
                             try:
                                 self.click_reactions(pos)
                                 name_card = self.ocr.get_names_single(
-                                    image, w, pos)
+                                    image, pos)
                                 print(str(name_card) + str(series) +
                                       self.server_name_list)
                                 logging.info("Got Name: " + str(name_card) + " Series: " + str(
@@ -497,12 +499,12 @@ class Discord_Scraper:
                                     "Cant Click Edition" + self.server_name_list, exc_info=True)
                         elif(not flag_global_clicked):
                             name_card = self.ocr.get_names_single(
-                                image, w, pos)
+                                image, pos)
                             if (name_card in self.dict_good_stuff) and not flag_global_clicked:
                                 series = self.dict_good_stuff.get(
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
-                                    image, w, pos).split(' ', 1)[0]
+                                    image, pos).split(' ', 1)[0]
                                 if series == '123456' or read_series == series:
                                     try:
                                         self.click_reactions(pos)
@@ -522,7 +524,7 @@ class Discord_Scraper:
                                 series = self.dict_good_stuff_addition.get(
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
-                                    image, w, pos).split(' ', 1)[0]
+                                    image, pos).split(' ', 1)[0]
                                 # logging.info("Checking Name: " + name_card + " Series: " + read_series)
                                 if series == '123456' or read_series == series:
                                     # edition = self.ocr.get_edition_number(image,pos)
@@ -694,7 +696,7 @@ class Discord_Scraper:
                             try:
                                 self.button_click(pos)
                                 name_card = self.ocr.get_names_single(
-                                    image, w, pos)
+                                    image, pos)
                                 print(str(name_card) + str(series) +
                                       self.server_name_list)
                                 logging.info("Got Name: " + str(name_card) + " Series: " + str(
@@ -708,12 +710,12 @@ class Discord_Scraper:
                         # card_name_list += " " + name_card
                         else:
                             name_card = self.ocr.get_names_single(
-                                image, w, pos)
+                                image, pos)
                             if (name_card in self.dict_good_stuff and not flag_global_clicked):
                                 series = self.dict_good_stuff.get(
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
-                                    image, w, pos).split(' ', 1)[0]
+                                    image, pos).split(' ', 1)[0]
                                 # logging.info("Checking Name: " + name_card + " Series: " + read_series)
                                 # print("Checking Name: " + name_card + " Series: " + read_series)
                                 if series == '123456' or read_series == series:
@@ -734,7 +736,7 @@ class Discord_Scraper:
                                 series = self.dict_good_stuff_addition.get(
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
-                                    image, w, pos).split(' ', 1)[0]
+                                    image, pos).split(' ', 1)[0]
                                 # logging.info("Checking Name: " + name_card + " Series: " + read_series)
                                 # print("Checking Name: " + name_card + " Series: " + read_series)
                                 if series == '123456' or read_series == series:
