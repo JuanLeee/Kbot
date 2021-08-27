@@ -8,14 +8,14 @@ Filters through messages selecting matching images to react with.
 
 Remade Repository because of sensitive information leaked sorry.
 
-## Built With
+# Built With
 
 * [Tesseract](https://github.com/tesseract-ocr/tesseract) - OCR to read images
 * [Selenium](https://selenium-python.readthedocs.io) - Webdriver automation
 * [OpenCV](https://pypi.org/project/opencv-python/) - Images processing
 
 <!-- GETTING STARTED -->
-## Getting Started
+# Getting Started
 
 ** CONTACT FOR WORKING TESSERACT OCR FILE **
 
