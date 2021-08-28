@@ -17,9 +17,6 @@ Remade Repository because of sensitive information leaked sorry.
 <!-- GETTING STARTED -->
 # Getting Started
 
-** CONTACT FOR WORKING TESSERACT OCR FILE **
-
-
 # Prerequisites
 
 ## Libraries Used
@@ -32,22 +29,20 @@ Remade Repository because of sensitive information leaked sorry.
 
 ## Installation
 
-1. Message for working tesseract OCR file
+1. Download and setup [Tesseract](https://github.com/tesseract-ocr/tesseract)
 
-2. Download and setup [Tesseract](https://github.com/tesseract-ocr/tesseract)
+2. Download and setup [Selenium](https://selenium-python.readthedocs.io/installation.html)
 
-3. Download and setup [Selenium](https://selenium-python.readthedocs.io/installation.html)
-
-4. Clone the repo
+3. Clone the repo
    ```sh
    git clone https://github.com/JuanLeee/Kbot.git
    ```
-5. Install all packages 
+4. Install all packages 
    ```sh
    pip install -r requirements.txt
    ```
 
-6. Setup .env file
+5. Setup .env file
    
    **NEED THESE INFORMATION**
    * Discord User Name
@@ -63,7 +58,7 @@ Remade Repository because of sensitive information leaked sorry.
    * Channel Class Identifier
      * Found through debug on discord page of channel of interest
 
-7. Make main_startup script with Object Main
+6. Make main_startup script with Object Main
    ```sh
    user_name = os.getenv('DISCORD_USER_NAME')
    password = os.getenv('DISCORD_PASSWORD')
@@ -75,7 +70,7 @@ Remade Repository because of sensitive information leaked sorry.
    main.debug_stop_loop()
    ```
 
-8. Run main file
+7. Run main file
     ```sh
     py main_start.py
     ```

@@ -228,10 +228,17 @@ class Discord_Scraper:
                         logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                         data_list_str = logs[z].get_attribute('id')
+                        # logging.info(data_list_str)
+                        # if len(logs) == 99:
+                        #     print(data_list_str)
+                        # logging.info(len(logs))
+                        # logging.info(str(z))
                         self.curr_id = str(data_list_str)
                     except:
+                        # print("FAILED")
                         logging.info("NO ATTRIBUTES START" +
                                      " " + self.server_name_list)
+                        logging.info(data_list_str)
                         logging.info(str(z) + " FAILED ")
                         # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
                         # logging.info(attrs)
@@ -242,14 +249,15 @@ class Discord_Scraper:
 
                     # print(data_list_str)
                     if data_list_str not in self.hash_table:
+                        text = logs[z].text
                         self.hash_table[data_list_str] = self.count_messages
                         self.count_messages += 1
                         # print(data_list_str)
                         # print(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))[z].text)
                         # print(temp_log.get_attribute('data-list-item-id'))
                         # print(curr_message)
-                        text = self.driver.find_element_by_id(
-                            self.curr_id).text
+                        # text = self.driver.find_element_by_id(
+                        #     self.curr_id).text
                         # logging.info(temp_log.text)
                         if self.flag_clicked:
                             self.count_clicked -= 1

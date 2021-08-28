@@ -143,7 +143,6 @@ Tesseract-OCR/
 *.exe
 .prettierrc
 __pycache__/card_image.cpython-39.pyc
-tesseract_ocr.py
 __pycache__/card_image.cpython-39.pyc
 __pycache__/good_stuffs.cpython-39.pyc
 __pycache__/selenium_login.cpython-39.pyc
