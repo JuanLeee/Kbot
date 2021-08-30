@@ -203,7 +203,7 @@ class Discord_Scraper:
             logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                 EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
             i = len(logs)-1
-        interval = 0.33
+        interval = 10
         # print("3")
         # self.driver.execute_script("document.body.style.zoom='25%'")
         print('Message Scroll')
