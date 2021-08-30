@@ -104,22 +104,22 @@ id_name1 = os.getenv('DISCORD_ID_NAME_1')
 
 
 
-main = Main(user_name,password,id_name)
-main.add_thread('guildsnav___540784184470274069', 'channels___817045744845586452','My Anime Land',True,1)
-for server_name, channel_name,server_name_list in zip(server_list, channel_list,server_name_list):
-    main.add_thread(server_name, channel_name,server_name_list,True,2)
-for server_name, channel_name,server_name_list in zip(server_list_button, channel_list_button,server_name_list_button):
-    main.add_thread(server_name, channel_name,server_name_list,True,3)
-main.run_threads(10)
-main.debug_stop_loop()
+# main = Main(user_name,password,id_name)
+# main.add_thread('guildsnav___540784184470274069', 'channels___817045744845586452','My Anime Land',True,1)
+# for server_name, channel_name,server_name_list in zip(server_list, channel_list,server_name_list):
+#     main.add_thread(server_name, channel_name,server_name_list,True,2)
+# for server_name, channel_name,server_name_list in zip(server_list_button, channel_list_button,server_name_list_button):
+#     main.add_thread(server_name, channel_name,server_name_list,True,3)
+# main.run_threads(10)
+# main.debug_stop_loop()
 
 
 
-# main1 = Main(user_name1,password1,id_name1)
-# main1.add_thread('guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,3)
-# main1.add_thread('guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,4)
-# main1.run_threads(30)
-# main1.debug_stop_loop()
+main1 = Main(user_name1,password1,id_name1)
+main1.add_thread('guildsnav___648031568756998155', 'channels___648044573536550922','Hub 1',False,3)
+main1.add_thread('guildsnav___648031568756998155', 'channels___776520559621570621','Hub 2',False,4)
+main1.run_threads(30)
+main1.debug_stop_loop()
 
 
 

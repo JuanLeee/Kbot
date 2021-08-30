@@ -89,20 +89,20 @@ class OCR_PyTes:
         return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
 
     def pytess_to_string(self,img):
-        img = self.get_grayscale(img)
+        # img = self.get_grayscale(img)
         
-        # img = cv2.bitwise_not(img)
-        # cv2.imshow('image',img)
-        # cv2.waitKey(0)
+        # # img = cv2.bitwise_not(img)
+        # # cv2.imshow('image',img)
+        # # cv2.waitKey(0)
         
-        scale_percent = 150 # percent of original size
-        width = int(img.shape[1] * scale_percent / 100)
-        height = int(img.shape[0] * scale_percent / 100)
-        dim = (width, height)
+        # scale_percent = 150 # percent of original size
+        # width = int(img.shape[1] * scale_percent / 100)
+        # height = int(img.shape[0] * scale_percent / 100)
+        # dim = (width, height)
         
-        # # resize image
-        img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
-        img = self.thresholding(img)
+        # # # resize image
+        # img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
+        # img = self.thresholding(img)
         # cv2.imshow('image',img)
         # cv2.waitKey(0)
         h, w = img.shape
@@ -119,16 +119,16 @@ class OCR_PyTes:
         return re.sub(r'\s\s+' , ' ',re.sub('[^0123456789abcdefghijklmnopqrstuvwxyz QWERTYUIOPLKJHGFDSAZXCVBNM\']','', p_string)).strip()
     
     def pytess_to_string_nums(self,img):
-        img = self.get_grayscale(img)
-        # img = self.thresholding(img)
-        img = cv2.bitwise_not(img)
-        scale_percent = 250 # percent of original size
-        width = int(img.shape[1] * scale_percent / 100)
-        height = int(img.shape[0] * scale_percent / 100)
-        dim = (width, height)
+        # img = self.get_grayscale(img)
+        # # img = self.thresholding(img)
+        # img = cv2.bitwise_not(img)
+        # scale_percent = 250 # percent of original size
+        # width = int(img.shape[1] * scale_percent / 100)
+        # height = int(img.shape[0] * scale_percent / 100)
+        # dim = (width, height)
         
-        # resize image
-        img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
+        # # resize image
+        # img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
         # img = self.thresholding(img)
         # cv2.imshow('image',img)
         # cv2.waitKey(0)
