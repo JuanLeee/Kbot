@@ -61,13 +61,6 @@ class Discord_Scraper:
             self.sleep_timer_drop = 1800
         flag_stop = False
         self.ocr = OCR_PyTes()
-        # path = self.ocr.resource_path('./good_stuff.json')
-        # with open(path) as f:
-        #     self.dict_good_stuff = json.load(f)
-        #     for key in self.dict_good_stuff.keys():
-        #         temp_value = self.dict_good_stuff[key].split(' ', 1)[0]
-        #         self.dict_good_stuff[key] = temp_value
-        #     print(self.dict_good_stuff)
         self.dict_good_stuff = dict_good_stuff_static
         self.dict_good_stuff_addition = dict_good_stuff_addition
 
@@ -78,7 +71,6 @@ class Discord_Scraper:
         for key in self.dict_good_stuff_addition.keys():
             temp_value = self.dict_good_stuff_addition[key].split(' ', 1)[0]
             self.dict_good_stuff_addition[key] = temp_value
-        # print(self.dict_good_stuff)
         self.time = time.time()
         self.counter = 50
 
@@ -193,21 +185,15 @@ class Discord_Scraper:
         flag_cd_grab_long = True
         flag_cd_grab = True
         refresh_counter = 0
-        # print("1")
         logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
-        # print('Messages')
         i = len(logs)-1
         while i <= 0:
-            # print("2")
             logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                 EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
             i = len(logs)-1
-        interval = 10
-        # print("3")
-        # self.driver.execute_script("document.body.style.zoom='25%'")
+        interval = 0.33
         print('Message Scroll')
-        # print(len(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))))
         self.action.move_to_element(WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))[-2]).perform()
         for n in range(1, 15):
@@ -218,52 +204,30 @@ class Discord_Scraper:
         count_clear = 0
         while not flag_stop:
             try:
-                # logs = log.find_elements(By.CLASS_NAME,'message-2qnXI6')
 
                 for j in range(1, n):
-                    z = -1 * j
+                    z = 1 * j
                     if flag_debug:
                         print(z)
                     try:
                         logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
                             EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
                         data_list_str = logs[z].get_attribute('id')
-                        # logging.info(data_list_str)
-                        # if len(logs) == 99:
-                        #     print(data_list_str)
-                        # logging.info(len(logs))
-                        # logging.info(str(z))
                         self.curr_id = str(data_list_str)
                     except:
-                        # print("FAILED")
                         logging.info("NO ATTRIBUTES START" +
                                      " " + self.server_name_list)
                         logging.info(data_list_str)
                         logging.info(str(z) + " FAILED ")
-                        # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
-                        # logging.info(attrs)
-                        logging.warning(
-                            "NO ATTRIBUTES START END", exc_info=True)
-                        # time.sleep(4)
                         break
 
-                    # print(data_list_str)
                     if data_list_str not in self.hash_table:
                         text = logs[z].text
                         self.hash_table[data_list_str] = self.count_messages
                         self.count_messages += 1
-                        # print(data_list_str)
-                        # print(WebDriverWait(self.driver,120,poll_frequency=0.05).until(EC.presence_of_all_elements_located((By.CLASS_NAME,'message-2qnXI6')))[z].text)
-                        # print(temp_log.get_attribute('data-list-item-id'))
-                        # print(curr_message)
-                        # text = self.driver.find_element_by_id(
-                        #     self.curr_id).text
-                        # logging.info(temp_log.text)
                         if self.flag_clicked:
                             self.count_clicked -= 1
-                            # text = self.driver.find_element_by_id(self.curr_id).text
-                            # logging.info(text)
-                            # logging.INFO(text)
+
                             if self.id_name + ', your Evasion' in text:
                                 self.count_clicked = self.count_reset
                                 self.flag_clicked = False
@@ -309,17 +273,8 @@ class Discord_Scraper:
 
                                 break
                         elif f_condition(text):
-                            # print("Condition")
                             f_action()
-                            # pos = get_position_hash(href_link,hash_table)
-                            # print(pos)
-                            # if pos > -1:
-                            #     reactions_container = WebDriverWait(temp_log,30).until(EC.presence_of_element_located((By.CLASS_NAME,'reactions-12N0jA')))
-                            #     reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
-                            #     while len(reactions) < pos:
-                            #         reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
-                            #     driver.execute_script("arguments[0].click();", reactions[pos-1].find_element(By.CLASS_NAME,'reactionInner-15NvIl'))
-                            # # find_element_by_class_name('reactions-12N0jA')
+
                     else:
                         break
                 if not flag_cd_grab:
@@ -328,13 +283,10 @@ class Discord_Scraper:
                     self.flag_clicked = False
                     self.clean_hash_table()
                     time.sleep(59)
-                    # flag_cd_grab = True
-                    # flag_cd_grab_long = True
-                    # flag_global_clicked = False
+
                     print("Exit: " + self.server_name_list)
                     self.current_state_fill_hash(n)
-                    # logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                    #     EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+
                 elif not flag_cd_grab_long:
                     print("Enter: " + self.server_name_list)
                     self.count_clicked = self.count_reset
@@ -342,13 +294,10 @@ class Discord_Scraper:
                     self.clean_hash_table()
                     time.sleep(self.sleep_timer_grab-1)
 
-                    # flag_cd_grab = True
-                    # flag_cd_grab_long = True
-                    # flag_global_clicked = False
+
                     print("Exit: " + self.server_name_list)
                     self.current_state_fill_hash(n)
-                    # logs = WebDriverWait(self.driver, 120, poll_frequency=0.05).until(
-                    #     EC.presence_of_all_elements_located((By.CLASS_NAME, 'message-2qnXI6')))
+
                 time.sleep(interval)
             except:
                 logging.warning("Error ml " + self.server_name_list)
@@ -382,11 +331,9 @@ class Discord_Scraper:
                     logging.info("NO ATTRIBUTES START" +
                                  " " + self.server_name_list)
                     logging.info(str(z) + " FAILED " + self.curr_id)
-                    # attrs = self.driver.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', logs[z])
-                    # logging.info(attrs)
+
                     logging.warning(
                         "NO ATTRIBUTES START END", exc_info=True)
-                    # time.sleep(4)
                     break
         except:
             logging.warning(
@@ -420,7 +367,6 @@ class Discord_Scraper:
         print("Quit DROP " + self.server_name_list)
 
     def condition_BOT_droppping(self, text):
-        # print(logs.text)
         try:
             if "dropping 4 cards" in text or "dropping 3 cards" in text:
                 if self.driver.find_element_by_id(self.curr_id).find_element_by_class_name('anchor-3Z-8Bb'):
@@ -430,7 +376,6 @@ class Discord_Scraper:
         return False
 
     def condition_BOT_droppping_Server(self, text):
-        # print(logs.text)
         try:
             if "cards since this server is currently active!" in text:
                 if self.driver.find_element_by_id(self.curr_id).find_element_by_class_name('anchor-3Z-8Bb'):
@@ -448,20 +393,15 @@ class Discord_Scraper:
     def action_href_img(self):
         global flag_global_clicked
         global flag_cd_grab
-        # print(logs.text)
-        # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.XPATH,"//img[@style=\"width: 400px; height: 149px;\" or style=\"width: 400px; height: 148px;\"]")))
-        # print(logs.text)
+
         error_count = 0
         flag_finished = False
         while(error_count < 3 and not flag_finished):
-            # logging.info(logs.text)
             try:
                 img_container = self.driver.find_element_by_id(
                     self.curr_id).find_element_by_class_name('anchor-3Z-8Bb')
                 href_link = img_container.get_attribute('href')
-                # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
-                # dimensions = img_container.get_attribute('src')
-                # Faster
+
                 error_count_image = 0
                 try:
                     image = url_to_image(href_link)
@@ -483,11 +423,10 @@ class Discord_Scraper:
                     continue
                 max = 4 if w > 900 else 3
                 pos = max-1
-                # card_name_list = ""
                 try:
                     while pos >= 0 and not self.flag_clicked:
                         print_num = self.ocr.get_print_num(image, pos)
-                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) > 100) and not flag_global_clicked:
                             name_card = print_num
                             read_series = print_num
                             series = print_num
@@ -527,15 +466,12 @@ class Discord_Scraper:
                                         error_count += 1
                                         logging.warning(
                                             "Cant Click Edition " + self.server_name_list, exc_info=True)
-                            # card_name_list += " " + name_card
                             elif name_card in self.dict_good_stuff_addition and not flag_global_clicked:
                                 series = self.dict_good_stuff_addition.get(
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
                                     image, pos).split(' ', 1)[0]
-                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
                                 if series == '123456' or read_series == series:
-                                    # edition = self.ocr.get_edition_number(image,pos)
                                     if name_card in char_numbers:
                                         edition = self.ocr.get_edition_number(
                                             image, pos)
@@ -554,10 +490,8 @@ class Discord_Scraper:
                                                 error_count += 1
                                                 logging.warning(
                                                     "Cant Click Edition " + self.server_name_list, exc_info=True)
-                        # logging.info(card_name_list)
                         pos -= 1
                     flag_finished = True
-                    # logging.info(card_name_list + " " + href_link)
                 except:
                     error_count += 1
                     logging.error("Exception occurred", exc_info=True)
@@ -584,11 +518,8 @@ class Discord_Scraper:
                 EC.presence_of_element_located((By.CLASS_NAME, 'reactions-12N0jA')))
             reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
                 EC.presence_of_all_elements_located((By.CLASS_NAME, 'reaction-1hd86g')))
-            # reactions = reactions_container.find_elements(By.CLASS_NAME,'reaction-1hd86g')
-            # print(len(reactions))
-            # print('i:' + str(i))
+
             while len(reactions) < pos+1:
-                # print("waiting")
                 reactions = reactions_container.find_elements(
                     By.CLASS_NAME, 'reaction-1hd86g')
             if not flag_global_clicked:
@@ -607,7 +538,6 @@ class Discord_Scraper:
                 reactions = WebDriverWait(reactions_container, 600, poll_frequency=0.05).until(
                     EC.presence_of_all_elements_located((By.CLASS_NAME, 'reaction-1hd86g')))
                 while len(reactions) < pos+1:
-                    # print("waiting")
                     reactions = reactions_container.find_elements(
                         By.CLASS_NAME, 'reaction-1hd86g')
                 if not flag_global_clicked:
@@ -660,20 +590,15 @@ class Discord_Scraper:
     def action_href_img_button(self):
         global flag_global_clicked
         global flag_cd_grab
-        # print(logs.text)
-        # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.XPATH,"//img[@style=\"width: 400px; height: 149px;\" or style=\"width: 400px; height: 148px;\"]")))
-        # print(logs.text)
+
         error_count = 0
         flag_finished = False
         while(error_count < 5 and not flag_finished):
-            # logging.info(logs.text)
             try:
                 img_container = self.driver.find_element_by_id(
                     self.curr_id).find_element_by_class_name('anchor-3Z-8Bb')
                 href_link = img_container.get_attribute('href')
-                # img_container = WebDriverWait(logs,30).until(EC.presence_of_element_located((By.TAG_NAME,'img')))
-                # dimensions = img_container.get_attribute('src')
-                # Faster
+
                 error_count_image = 0
                 try:
                     image = url_to_image(href_link)
@@ -693,11 +618,10 @@ class Discord_Scraper:
                     continue
                 max = 4 if w > 900 else 3
                 pos = max-1
-                # card_name_list = ""
                 try:
                     while pos >= 0 and not self.flag_clicked:
                         print_num = self.ocr.get_print_num(image, pos)
-                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) > 100) and not flag_global_clicked:
                             name_card = print_num
                             read_series = print_num
                             series = print_num
@@ -715,7 +639,6 @@ class Discord_Scraper:
                                 error_count += 1
                                 logging.warning(
                                     "Cant Click Edition " + self.server_name_list, exc_info=True)
-                        # card_name_list += " " + name_card
                         else:
                             name_card = self.ocr.get_names_single(
                                 image, pos)
@@ -724,8 +647,7 @@ class Discord_Scraper:
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
                                     image, pos).split(' ', 1)[0]
-                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
-                                # print("Checking Name: " + name_card + " Series: " + read_series)
+
                                 if series == '123456' or read_series == series:
                                     try:
                                         self.button_click(pos)
@@ -745,8 +667,7 @@ class Discord_Scraper:
                                     name_card, '-1')
                                 read_series = self.ocr.get_names_bottom(
                                     image, pos).split(' ', 1)[0]
-                                # logging.info("Checking Name: " + name_card + " Series: " + read_series)
-                                # print("Checking Name: " + name_card + " Series: " + read_series)
+
                                 if series == '123456' or read_series == series:
                                     if name_card in char_numbers:
                                         edition = self.ocr.get_edition_number(
@@ -766,10 +687,8 @@ class Discord_Scraper:
                                                 error_count += 1
                                                 logging.warning(
                                                     "Cant Click Edition " + self.server_name_list, exc_info=True)
-                        # logging.info(card_name_list)
                         pos -= 1
                     flag_finished = True
-                    # print(card_name_list + " " + href_link)
                 except:
                     error_count += 1
                     logging.error("Exception occurred", exc_info=True)

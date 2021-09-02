@@ -526,6 +526,20 @@ class TestOCRCheck(unittest.TestCase):
         self.assertTrue(self.ocr.get_print_num(images,1)>=100000)
         self.assertTrue(self.ocr.get_print_num(images,2)>=100000)
         self.assertTrue(self.ocr.get_print_num(images,3)>=1000)
+        
+    def test_card82(self):
+        absolute_path = os.path.join(os.getcwd(), 'card (82).png')
+        images = cv2.imread(absolute_path)
+        self.assertTrue(self.ocr.get_print_num(images,0)>=100000)
+        self.assertTrue(self.ocr.get_print_num(images,1)>=100000)
+        self.assertTrue(self.ocr.get_print_num(images,2)>=100000)
+        
+    def test_card83(self):
+        absolute_path = os.path.join(os.getcwd(), 'card (83).png')
+        images = cv2.imread(absolute_path)
+        self.assertTrue(self.ocr.get_print_num(images,0)>=10000)
+        self.assertTrue(self.ocr.get_print_num(images,1)>=100000)
+        self.assertTrue(self.ocr.get_print_num(images,2)>=100000)
     
 if __name__ == '__main__':
     unittest.main()
