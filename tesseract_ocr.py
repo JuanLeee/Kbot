@@ -21,9 +21,13 @@ class OCR_PyTes:
         self.htop = 46
         self.wbot = 193
         self.hbot = 52
+    
+        # cv2.imshow('Cropped Image', images)
+        # cv2.waitKey(100000)
         
         # self.custom_config = r'--psm 13 --oem 3 outputbase digits'
         # self.custom_config = r'--oem 3 --psm 7'
+        # get grayscale image
 
     def resource_path(self,relative_path):
         try:
@@ -84,25 +88,62 @@ class OCR_PyTes:
         return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
 
     def pytess_to_string(self,img):
+        img = self.get_grayscale(img)
+        
+        # img = cv2.bitwise_not(img)
+        # cv2.imshow('image',img)
+        # cv2.waitKey(0)
+        
+        scale_percent = 150 # percent of original size
+        width = int(img.shape[1] * scale_percent / 100)
+        height = int(img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        
+        # # resize image
+        img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
+        img = self.thresholding(img)
+        # cv2.imshow('image',img)
+        # cv2.waitKey(0)
         h, w = img.shape
         img_bytes = img.tobytes()
         bytesPerPixel = int(len(img_bytes) / (w * h))
         temp_string = self.ocr.read(img_bytes, w, h, bytesPerPixel)
+        # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         if temp_string is None:
             temp_string = ""
+            # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         p_string = re.sub('\n',' ',temp_string.lower())
+        # print(p_string)
+        # print(re.sub(r'\s\s+' , ' ',re.sub('[^0123456789abcdefghijklmnopqrstuvwxyz QWERTYUIOPLKJHGFDSAZXCVBNM\']','', p_string)).strip())
         return re.sub(r'\s\s+' , ' ',re.sub('[^0123456789abcdefghijklmnopqrstuvwxyz QWERTYUIOPLKJHGFDSAZXCVBNM\']','', p_string)).strip()
     
     def pytess_to_string_nums(self,img):
+        img = self.get_grayscale(img)
+        # img = self.thresholding(img)
+        img = cv2.bitwise_not(img)
+        scale_percent = 250 # percent of original size
+        width = int(img.shape[1] * scale_percent / 100)
+        height = int(img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        
+        # resize image
+        img = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR )
+        # img = self.thresholding(img)
+        # cv2.imshow('image',img)
+        # cv2.waitKey(0)
         h, w = img.shape
         img_bytes = img.tobytes()
         bytesPerPixel = int(len(img_bytes) / (w * h))
         temp_string = self.ocr.read(img_bytes, w, h, bytesPerPixel)
+        # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         if temp_string is None:
             temp_string = "9999"
+            # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         p_string = re.sub('\n',' ',temp_string.strip().lower())
+        # print(p_string)
         num = 1
-                
+        # p_string = re.sub('[^0123456789\-abcdefghijklmnopqrstuvwxyzQWERTYUIOPLKJHGFDSAZXCVBNM§€@]','', p_string)
+        
         length = len(p_string.split('-')[0])
         while length > 0:
             num *= 10
@@ -112,32 +153,45 @@ class OCR_PyTes:
     def get_print_num(self,image,pos):
         try: 
             edition = self.get_edition_number(image,pos)
+            # print(edition , " " , str(pos))
             if edition == 1:
                 if pos == 0:
+                    # return self.pytess_to_string_nums(image[371:381,161:195])
                     return self.pytess_to_string_nums(image[370:382,161:210])
                 if pos == 1:
+                    # return self.pytess_to_string_nums(image[373:383,449:473])
                     return self.pytess_to_string_nums(image[370:382,435:484])
                 if pos == 2:
+                    # return self.pytess_to_string_nums(image[371:381,709:743])
                     return self.pytess_to_string_nums(image[370:382,709:758])
                 if pos == 3:
+                    # return self.pytess_to_string_nums(image[371:381,983:1017])
                     return self.pytess_to_string_nums(image[370:382,981:1030])
             elif edition == 2:
                 if pos == 0:
+                    # return self.pytess_to_string_nums(image[371:381,161:195])
                     return self.pytess_to_string_nums(image[372:385,163:217])
                 if pos == 1:
+                    # return self.pytess_to_string_nums(image[373:383,449:473])
                     return self.pytess_to_string_nums(image[372:385,437:491])
                 if pos == 2:
+                    # return self.pytess_to_string_nums(image[371:381,709:743])
                     return self.pytess_to_string_nums(image[372:385,711:765])
                 if pos == 3:
+                    # return self.pytess_to_string_nums(image[371:381,983:1017])
                     return self.pytess_to_string_nums(image[372:385,985:1039])
             else:
                 if pos == 0:
+                    # return self.pytess_to_string_nums(image[371:381,161:195])
                     return self.pytess_to_string_nums(image[371:383,154:210])
                 if pos == 1:
+                    # return self.pytess_to_string_nums(image[373:383,449:473])
                     return self.pytess_to_string_nums(image[371:383,428:484])
                 if pos == 2:
+                    # return self.pytess_to_string_nums(image[371:381,709:743])
                     return self.pytess_to_string_nums(image[371:383,702:758])
                 if pos == 3:
+                    # return self.pytess_to_string_nums(image[371:381,983:1017])
                     return self.pytess_to_string_nums(image[371:383,978:1032])
             return 9999
         except:

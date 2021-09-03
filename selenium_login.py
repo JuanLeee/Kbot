@@ -20,12 +20,10 @@ from good_stuffs import char_numbers
 import time
 import math
 
-
 import time
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 class Discord_Scraper:
     def __init__(self, driver, action, user_name, password, server_name, channel_name, server_name_list, id_name, timer):
@@ -206,7 +204,7 @@ class Discord_Scraper:
             try:
 
                 for j in range(1, n):
-                    z = 1 * j
+                    z = -1 * j
                     if flag_debug:
                         print(z)
                     try:
@@ -293,7 +291,6 @@ class Discord_Scraper:
                     self.flag_clicked = False
                     self.clean_hash_table()
                     time.sleep(self.sleep_timer_grab-1)
-
 
                     print("Exit: " + self.server_name_list)
                     self.current_state_fill_hash(n)
@@ -426,7 +423,7 @@ class Discord_Scraper:
                 try:
                     while pos >= 0 and not self.flag_clicked:
                         print_num = self.ocr.get_print_num(image, pos)
-                        if (math.log10(print_num))+1 > 0 and (int(print_num) > 100) and not flag_global_clicked:
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
                             name_card = print_num
                             read_series = print_num
                             series = print_num
@@ -621,7 +618,7 @@ class Discord_Scraper:
                 try:
                     while pos >= 0 and not self.flag_clicked:
                         print_num = self.ocr.get_print_num(image, pos)
-                        if (math.log10(print_num))+1 > 0 and (int(print_num) > 100) and not flag_global_clicked:
+                        if (math.log10(print_num))+1 > 0 and (int(print_num) <= 100) and not flag_global_clicked:
                             name_card = print_num
                             read_series = print_num
                             series = print_num
@@ -734,3 +731,5 @@ class Discord_Scraper:
     def start_up_kd(self):
         self.login_sign()
         self.kd_every()
+
+

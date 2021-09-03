@@ -146,3 +146,5 @@ __pycache__/card_image.cpython-39.pyc
 __pycache__/card_image.cpython-39.pyc
 __pycache__/good_stuffs.cpython-39.pyc
 __pycache__/selenium_login.cpython-39.pyc
+selenium_login.py
+tesseract_ocr.py
