@@ -8,6 +8,9 @@ import logging
 import string, re
 import sys
 import unittest
+import easyocr
+from easyocr import Reader
+import argparse
 
 
 
@@ -21,6 +24,7 @@ class OCR_PyTes:
         self.htop = 46
         self.wbot = 193
         self.hbot = 52
+        # self.reader = easyocr.Reader(['en'], gpu = True)
     
         # cv2.imshow('Cropped Image', images)
         # cv2.waitKey(100000)
@@ -105,9 +109,12 @@ class OCR_PyTes:
         # cv2.imshow('image',img)
         # cv2.waitKey(0)
         h, w = img.shape
+        
         img_bytes = img.tobytes()
         bytesPerPixel = int(len(img_bytes) / (w * h))
         temp_string = self.ocr.read(img_bytes, w, h, bytesPerPixel)
+        
+        
         # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         if temp_string is None:
             temp_string = ""
@@ -131,10 +138,18 @@ class OCR_PyTes:
         # img = self.thresholding(img)
         # cv2.imshow('image',img)
         # cv2.waitKey(0)
+        
         h, w = img.shape
         img_bytes = img.tobytes()
         bytesPerPixel = int(len(img_bytes) / (w * h))
         temp_string = self.ocr.read(img_bytes, w, h, bytesPerPixel)
+        
+        # results = self.reader.readtext(img,allowlist="1234567890-",text_threshold=0.2)
+        
+        # print(results[0][1])
+        
+        # temp_string = results[0][1]
+        
         # temp_string = pytesseract.image_to_string(img,config=self.custom_config)
         if temp_string is None:
             temp_string = "9999"
